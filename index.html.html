@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mother System OS v3 — 5-Platform Omni-Lead & 1,000/Day Command Center</title>
+  <style>
+    :root {
+      --bg: #050811;
+      --sidebar: #090e1a;
+      --panel: #0f172a;
+      --panel-alt: #1e293b;
+      --panel-glass: rgba(15, 23, 42, 0.85);
+      --border: #263554;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --sky: #38bdf8;
+      --emerald: #10b981;
+      --amber: #f59e0b;
+      --violet: #a855f7;
+      --rose: #f43f5e;
+      --linkedin: #0a66c2;
+      --meta: #1877f2;
+      --tiktok: #ff0050;
+      --google: #eab308;
+      --xcorp: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: radial-gradient(circle at top right, #0f172a 0%, #050811 65%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Hidden Pure-CSS State Inputs (Guarantees 100% button interactivity in any previewer) */
+    .css-state {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 14px;
+      flex-shrink: 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 8px 18px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0284c7, #7c3aed, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      box-shadow: 0 0 20px rgba(124, 58, 237, 0.45);
+    }
+    .tenant-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+    }
+    .tenant-card label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+    }
+    .tenant-card select {
+      width: 100%;
+      background: var(--panel-alt);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+    }
+
+    .nav-btn {
+      width: 100%;
+      padding: 12px 13px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .nav-btn:hover {
+      background: rgba(56, 189, 248, 0.08);
+      color: var(--text);
+    }
+    .badge-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      background: var(--panel-alt);
+      color: var(--text);
+    }
+
+    /* Active Sidebar Tab Highlighting via Pure CSS */
+    #tab-1:checked ~ .app-shell .sidebar label[for="tab-1"],
+    #tab-2:checked ~ .app-shell .sidebar label[for="tab-2"],
+    #tab-3:checked ~ .app-shell .sidebar label[for="tab-3"],
+    #tab-4:checked ~ .app-shell .sidebar label[for="tab-4"],
+    #tab-5:checked ~ .app-shell .sidebar label[for="tab-5"] {
+      background: linear-gradient(90deg, rgba(2,132,199,0.28), rgba(124,58,237,0.14));
+      color: var(--sky);
+      border-left-color: var(--sky);
+      box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.12);
+    }
+
+    /* Main Content Panes */
+    .main {
+      flex: 1;
+      padding: 22px 26px;
+      overflow-y: auto;
+    }
+    .pane { display: none; }
+    #tab-1:checked ~ .app-shell .main #view-1,
+    #tab-2:checked ~ .app-shell .main #view-2,
+    #tab-3:checked ~ .app-shell .main #view-3,
+    #tab-4:checked ~ .app-shell .main #view-4,
+    #tab-5:checked ~ .app-shell .main #view-5 {
+      display: block;
+    }
+
+    /* Top Command Prompt Bar */
+    .command-bar {
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(30,41,59,0.9));
+      border: 1px solid #3b82f6;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 30px rgba(2, 132, 199, 0.15);
+    }
+    .command-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .prompt-box {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .prompt-input {
+      flex: 1;
+      min-width: 260px;
+      background: #060a14;
+      border: 1px solid var(--border);
+      color: #bae6fd;
+      padding: 11px 14px;
+      border-radius: 9px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Universal Interactive Button Styling */
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #0284c7, #2563eb);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.45);
+    }
+    .btn-emerald { background: linear-gradient(135deg, #059669, #10b981); border-color: rgba(16,185,129,0.4); }
+    .btn-violet { background: linear-gradient(135deg, #7c3aed, #9333ea); border-color: rgba(168,85,247,0.4); }
+    .btn-amber { background: linear-gradient(135deg, #d97706, #f59e0b); border-color: rgba(245,158,11,0.4); }
+    .btn-sm { padding: 6px 11px; font-size: 11.5px; border-radius: 7px; }
+
+    /* Mother Prompt Live Execution Result Banner (Toggled by #run-1000 checkbox) */
+    .batch-execution-panel {
+      display: none;
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+    }
+    #run-1000:checked ~ .app-shell .main .batch-execution-panel {
+      display: block;
+    }
+
+    /* Funnel Allocation Bar */
+    .funnel-bar {
+      display: flex;
+      height: 12px;
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 12px 0 8px;
+      background: #1e293b;
+    }
+    .f-30 { width: 30%; background: var(--emerald); }
+    .f-17 { width: 17.5%; background: var(--amber); }
+    .f-52 { width: 52.5%; background: var(--rose); }
+
+    /* KPI Grid */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 18px;
+    }
+    .card-label {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .kpi-num {
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    /* Platform Filter Pills (Pure CSS Radios) */
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+      align-items: center;
+    }
+    .plat-pill, .bucket-pill {
+      padding: 7px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--panel-alt);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+    .plat-pill:hover, .bucket-pill:hover { color: var(--text); border-color: var(--sky); }
+
+    #pf-all:checked ~ .app-shell .main label[for="pf-all"],
+    #pf-li:checked ~ .app-shell .main label[for="pf-li"],
+    #pf-meta:checked ~ .app-shell .main label[for="pf-meta"],
+    #pf-tt:checked ~ .app-shell .main label[for="pf-tt"],
+    #pf-gg:checked ~ .app-shell .main label[for="pf-gg"],
+    #pf-x:checked ~ .app-shell .main label[for="pf-x"] {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--sky);
+      border-color: var(--sky);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    #bk-all:checked ~ .app-shell .main label[for="bk-all"],
+    #bk-pitch:checked ~ .app-shell .main label[for="bk-pitch"],
+    #bk-follow:checked ~ .app-shell .main label[for="bk-follow"],
+    #bk-drop:checked ~ .app-shell .main label[for="bk-drop"] {
+      background: rgba(16, 185, 129, 0.2);
+      color: #6ee7b7;
+      border-color: var(--emerald);
+    }
+
+    /* Pure CSS Platform Filtering on Table Rows */
+    #pf-li:checked ~ .app-shell .main .lead-row:not(.plat-li) { display: none; }
+    #pf-meta:checked ~ .app-shell .main .lead-row:not(.plat-meta) { display: none; }
+    #pf-tt:checked ~ .app-shell .main .lead-row:not(.plat-tt) { display: none; }
+    #pf-gg:checked ~ .app-shell .main .lead-row:not(.plat-gg) { display: none; }
+    #pf-x:checked ~ .app-shell .main .lead-row:not(.plat-x) { display: none; }
+
+    /* Pure CSS Funnel Bucket Filtering on Table Rows */
+    #bk-pitch:checked ~ .app-shell .main .lead-row:not(.bucket-pitch) { display: none; }
+    #bk-follow:checked ~ .app-shell .main .lead-row:not(.bucket-follow) { display: none; }
+    #bk-drop:checked ~ .app-shell .main .lead-row:not(.bucket-drop) { display: none; }
+
+    /* Platform Badges */
+    .p-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 2px;
+    }
+    .p-li { background: rgba(10, 102, 194, 0.25); color: #93c5fd; border: 1px solid rgba(10,102,194,0.5); }
+    .p-meta { background: rgba(24, 119, 242, 0.22); color: #bfdbfe; border: 1px solid rgba(24,119,242,0.5); }
+    .p-tt { background: rgba(255, 0, 80, 0.2); color: #fda4af; border: 1px solid rgba(255,0,80,0.45); }
+    .p-gg { background: rgba(234, 179, 8, 0.2); color: #fde047; border: 1px solid rgba(234,179,8,0.45); }
+    .p-x { background: rgba(226, 232, 240, 0.15); color: #f8fafc; border: 1px solid rgba(226,232,240,0.4); }
+
+    .tag {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 2px;
+    }
+    .tag-red { background: rgba(244,63,94,0.16); color: #fda4af; }
+    .tag-green { background: rgba(16,185,129,0.18); color: #6ee7b7; }
+    .tag-amber { background: rgba(245,158,11,0.18); color: #fcd34d; }
+    .tag-purple { background: rgba(168,85,247,0.18); color: #d8b4fe; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.8px;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    th { color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    @media (max-width: 980px) {
+      .app-shell { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    /* Pure CSS Selected Lead Demo Cards in Pillar 3 & Pillar 4 */
+    .demo-card-item { display: none; }
+    #lead-sel-1:checked ~ .app-shell .main .demo-for-1,
+    #lead-sel-2:checked ~ .app-shell .main .demo-for-2,
+    #lead-sel-3:checked ~ .app-shell .main .demo-for-3,
+    #lead-sel-4:checked ~ .app-shell .main .demo-for-4,
+    #lead-sel-5:checked ~ .app-shell .main .demo-for-5 {
+      display: block;
+    }
+
+    .lead-selector-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    #lead-sel-1:checked ~ .app-shell .main label[for="lead-sel-1"],
+    #lead-sel-2:checked ~ .app-shell .main label[for="lead-sel-2"],
+    #lead-sel-3:checked ~ .app-shell .main label[for="lead-sel-3"],
+    #lead-sel-4:checked ~ .app-shell .main label[for="lead-sel-4"],
+    #lead-sel-5:checked ~ .app-shell .main label[for="lead-sel-5"] {
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      color: #fff;
+      border-color: #a855f7;
+    }
+
+    /* Chat Window */
+    .chat-box {
+      background: #080d1a;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      height: 350px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .msg {
+      max-width: 86%;
+      padding: 10px 14px;
+      border-radius: 11px;
+      font-size: 12.8px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+    .msg-ai {
+      background: rgba(2, 132, 199, 0.22);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      align-self: flex-start;
+    }
+    .msg-user {
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      align-self: flex-end;
+    }
+
+    /* Interactive Chat Simulation Checkboxes */
+    .sim-voice-block, .sim-price-block, .sim-deal-block, .sim-vault-saved { display: none; }
+    #chat-sim-voice:checked ~ .app-shell .main .sim-voice-block { display: block; }
+    #chat-sim-price:checked ~ .app-shell .main .sim-price-block { display: block; }
+    #chat-sim-deal:checked ~ .app-shell .main .sim-deal-block { display: block; }
+    #vault-save-toggle:checked ~ .app-shell .main .sim-vault-saved { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. SIDEBAR NAVIGATION RADIOS -->
+  <input type="radio" name="main-nav" id="tab-1" class="css-state" />
+  <input type="radio" name="main-nav" id="tab-2" class="css-state" checked />
+  <input type="radio" name="main-nav" id="tab-3" class="css-state" />
+  <input type="radio" name="main-nav" id="tab-4" class="css-state" />
+  <input type="radio" name="main-nav" id="tab-5" class="css-state" />
+
+  <!-- 2. MOTHER PROMPT 1,000/DAY EXECUTION CHECKBOX -->
+  <input type="checkbox" id="run-1000" class="css-state" checked />
+
+  <!-- 3. 5-PLATFORM FILTER RADIOS (Pillar 2) -->
+  <input type="radio" name="plat-filter" id="pf-all" class="css-state" checked />
+  <input type="radio" name="plat-filter" id="pf-li" class="css-state" />
+  <input type="radio" name="plat-filter" id="pf-meta" class="css-state" />
+  <input type="radio" name="plat-filter" id="pf-tt" class="css-state" />
+  <input type="radio" name="plat-filter" id="pf-gg" class="css-state" />
+  <input type="radio" name="plat-filter" id="pf-x" class="css-state" />
+
+  <!-- 4. FUNNEL BUCKET FILTER RADIOS (30% Pitch / 25% of 70% Follow-up / Drop) -->
+  <input type="radio" name="bucket-filter" id="bk-all" class="css-state" checked />
+  <input type="radio" name="bucket-filter" id="bk-pitch" class="css-state" />
+  <input type="radio" name="bucket-filter" id="bk-follow" class="css-state" />
+  <input type="radio" name="bucket-filter" id="bk-drop" class="css-state" />
+
+  <!-- 5. ACTIVE LEAD SELECTOR RADIOS FOR PILLAR 3 & PILLAR 4 -->
+  <input type="radio" name="lead-select" id="lead-sel-1" class="css-state" checked />
+  <input type="radio" name="lead-select" id="lead-sel-2" class="css-state" />
+  <input type="radio" name="lead-select" id="lead-sel-3" class="css-state" />
+  <input type="radio" name="lead-select" id="lead-sel-4" class="css-state" />
+  <input type="radio" name="lead-select" id="lead-sel-5" class="css-state" />
+
+  <!-- 6. CHAT & VAULT SIMULATION CHECKBOXES -->
+  <input type="checkbox" id="chat-sim-voice" class="css-state" />
+  <input type="checkbox" id="chat-sim-price" class="css-state" />
+  <input type="checkbox" id="chat-sim-deal" class="css-state" />
+  <input type="checkbox" id="vault-save-toggle" class="css-state" />
+
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">M5</div>
+        <div>
+          <div style="font-weight: 800; font-size: 15px;">Mother System OS</div>
+          <div style="font-size: 11px; color: var(--sky);">v3.0 • 5-Platform Omni-Engine</div>
+        </div>
+      </div>
+
+      <div class="tenant-card">
+        <label>Active Operating Tenant</label>
+        <select id="tenantSelect">
+          <option value="Siyane Marketing & RG Ads">Siyane Marketing + RG Ads (Internal)</option>
+          <option value="Global White-Label SaaS Mode">Global White-Label Agency Mode ($497/mo)</option>
+          <option value="Enterprise Software Dev Mode">Software Engineering B2B Closer Mode</option>
+        </select>
+      </div>
+
+      <label for="tab-2" class="nav-btn">
+        <span>2. 5-Platform Lead Finder</span>
+        <span class="badge-pill" style="background: rgba(56,189,248,0.2); color:var(--sky);">1,000/d</span>
+      </label>
+      <label for="tab-3" class="nav-btn">
+        <span>3. Pre-Sale Demo Factory</span>
+        <span class="badge-pill" style="background: rgba(168,85,247,0.2); color:#d8b4fe;">300 Built</span>
+      </label>
+      <label for="tab-4" class="nav-btn">
+        <span>1 &amp; 4. Business Manager</span>
+        <span class="badge-pill" style="background: rgba(16,185,129,0.25); color:#6ee7b7;">Closer</span>
+      </label>
+      <label for="tab-1" class="nav-btn">
+        <span>5. Mother Kernel &amp; Queues</span>
+        <span class="badge-pill">pgmq</span>
+      </label>
+      <label for="tab-5" class="nav-btn">
+        <span>⚙️ LiteLLM &amp; SaaS Vault</span>
+        <span class="badge-pill">400+ LLMs</span>
+      </label>
+
+      <div style="margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11.5px; color: var(--muted); line-height: 1.6;">
+        <div><strong>Active Networks:</strong> LinkedIn • Meta • TikTok • Google • X</div>
+        <div><strong>Daily Compute Cost:</strong> $6.80 (~රු. 2,040)</div>
+        <div style="color: var(--emerald); font-weight: 700;">● Zero-Lag 5-Worker Pool Online</div>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="main">
+
+      <!-- TOP MOTHER PROMPT COMMAND BAR (Always visible) -->
+      <div class="command-bar">
+        <div class="command-header">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="tag tag-purple">Pillar 5 Mother Command</span>
+            <strong style="font-size: 14px;">Declarative Daily Volume &amp; Funnel Governor</strong>
+          </div>
+          <span style="font-size: 12px; color: var(--emerald);">⚡ Speed: 0.7 leads/min (Zero CPU/DB Lag) • Cost: ~රු. 2,040/day</span>
+        </div>
+
+        <div class="prompt-box">
+          <input type="text" class="prompt-input" value="Prompt: දවසකට ව්‍යාපාර 1,000ක් (LinkedIn, Meta, TikTok, Google, X) පරීක්ෂා කර → හොඳම 30% (300) ට Live Demo හදලා Pitch කරන්න → ඉතුරු 70%න් 25%ක් (175) Follow-up දාන්න → ඉතුරු 525 අතහරින්න." readonly />
+          <label for="run-1000" class="btn-action btn-emerald">⚡ Toggle 1,000/Day Live Funnel Breakdown</label>
+        </div>
+
+        <div class="batch-execution-panel">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:12.5px;">
+            <span>✅ <strong>Scanned Today:</strong> 1,000 Businesses (5 Platforms)</span>
+            <span style="color:#6ee7b7;">🎯 <strong>Top 30% High-Ticket Pitch:</strong> 300 Leads (Demos Built &amp; Sent)</span>
+            <span style="color:#fcd34d;">⏳ <strong>25% of Remaining 700 Follow-Up:</strong> 175 Leads (72h Drip Queue)</span>
+            <span style="color:#fda4af;">🗑️ <strong>Auto-Dropped (Low ROI):</strong> 525 Leads ($0 Wasted)</span>
+          </div>
+          <div class="funnel-bar">
+            <div class="f-30" title="30% High-Ticket Pitch (300)"></div>
+            <div class="f-17" title="17.5% Follow-up Queue (175)"></div>
+            <div class="f-52" title="52.5% Auto-Dropped (525)"></div>
+          </div>
+          <div style="font-size:11.5px; color:var(--muted); display:flex; justify-content:space-between; flex-wrap:wrap;">
+            <span>Pacing: WhatsApp (2 Numbers) + Messenger + LinkedIn + Email (Anti-Ban Jitter Active)</span>
+            <span>Expected Daily High-Ticket Replies: ~45–60 Conversations → <strong>3 to 8 Closed Deals/Day</strong></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 2 (DEFAULT): 5-PLATFORM OMNI-SOCIAL LEAD FINDER & AUDITOR    -->
+      <!-- ================================================================= -->
+      <section id="view-2" class="pane">
+        <div class="kpi-grid">
+          <div class="card">
+            <div class="card-label">💼 LinkedIn B2B &amp; Hiring Signals</div>
+            <div class="kpi-num" style="color:#93c5fd;">210 <span style="font-size:13px;font-weight:500;">/ day</span></div>
+            <div class="kpi-sub">CEOs &amp; Agencies hiring Dev/Marketing staff</div>
+          </div>
+          <div class="card">
+            <div class="card-label">📘 Meta + 🎵 TikTok Ad Gaps</div>
+            <div class="kpi-num" style="color:#fda4af;">430 <span style="font-size:13px;font-weight:500;">/ day</span></div>
+            <div class="kpi-sub">Active ad spenders with weak video hooks (&lt;45/100)</div>
+          </div>
+          <div class="card">
+            <div class="card-label">🔍 Google Ads/Maps + 𝕏 Intent</div>
+            <div class="kpi-num" style="color:#fde047;">360 <span style="font-size:13px;font-weight:500;">/ day</span></div>
+            <div class="kpi-sub">High search spenders missing Pixel/CAPI + Live X posts</div>
+          </div>
+          <div class="card">
+            <div class="card-label">🎯 Top 30% Qualified High-Ticket</div>
+            <div class="kpi-num" style="color:var(--emerald);">300 <span style="font-size:13px;font-weight:500;">Pitched</span></div>
+            <div class="kpi-sub">Min Leak ≥ රු. 250,000/mo • Avg Deal: රු. 125,000+</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <h3 style="font-size:16px;">Live 5-Platform Cross-Arbitrage Lead Matrix (Click Platform or Bucket Buttons to Filter)</h3>
+            <span style="font-size:12px; color:var(--sky);">Unified via Apify API v2 + Official Ad Transparency Libraries</span>
+          </div>
+
+          <!-- Platform Filter Buttons -->
+          <div class="filter-row">
+            <span style="font-size:12px; color:var(--muted); margin-right:4px;">Filter by Platform:</span>
+            <label for="pf-all" class="plat-pill">🌐 All 5 Platforms (8 Sample Rows)</label>
+            <label for="pf-li" class="plat-pill">💼 LinkedIn</label>
+            <label for="pf-meta" class="plat-pill">📘 Meta (FB/IG)</label>
+            <label for="pf-tt" class="plat-pill">🎵 TikTok</label>
+            <label for="pf-gg" class="plat-pill">🔍 Google Ads/Maps</label>
+            <label for="pf-x" class="plat-pill">𝕏 Twitter/X</label>
+          </div>
+
+          <!-- Funnel Bucket Filter Buttons -->
+          <div class="filter-row" style="margin-bottom: 16px;">
+            <span style="font-size:12px; color:var(--muted); margin-right:4px;">Filter by 1,000/Day Rule:</span>
+            <label for="bk-all" class="bucket-pill">All Scanned Buckets</label>
+            <label for="bk-pitch" class="bucket-pill">🎯 Top 30% Instant Pitch + Demo (300/day)</label>
+            <label for="bk-follow" class="bucket-pill">⏳ 25% of 70% Follow-Up Queue (175/day)</label>
+            <label for="bk-drop" class="bucket-pill">🗑️ 52.5% Auto-Dropped (525/day)</label>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Company &amp; Decision Maker (Real Entities)</th>
+                <th>Platforms Detected</th>
+                <th>Cross-Platform Arbitrage Gap (Why They Need Us)</th>
+                <th>Monthly Leak / Value</th>
+                <th>1,000/Day Bucket</th>
+                <th>Action (Click to Inspect)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- ROW 1: Mahogany Masterpieces -->
+              <tr class="lead-row plat-meta plat-tt plat-gg bucket-pitch">
+                <td>
+                  <strong>Mahogany Masterpieces</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Colombo 05 • Luxury Solid Wood Furniture</span>
+                </td>
+                <td>
+                  <span class="p-badge p-gg">🔍 Google</span>
+                  <span class="p-badge p-meta">📘 Meta</span>
+                  <span class="p-badge p-tt">🎵 TikTok Gap</span>
+                </td>
+                <td>
+                  <span class="tag tag-red">TikTok Commercial Ads = 0</span>
+                  <span class="tag tag-red">Meta Video Hook (34/100)</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">High Google Search traffic, but zero 60s luxury video retargeting funnel on TikTok/Reels.</div>
+                </td>
+                <td style="font-weight:800; color:#fda4af;">රු. 380,000/mo</td>
+                <td><span class="tag tag-green">🎯 TOP 30% PITCH (Score: 94)</span></td>
+                <td>
+                  <label for="lead-sel-1" class="btn-action btn-sm" onclick="document.getElementById('tab-3').checked=true;">🎨 View Demo</label>
+                  <label for="lead-sel-1" class="btn-action btn-emerald btn-sm" onclick="document.getElementById('tab-4').checked=true;">💬 Pitch Closer</label>
+                </td>
+              </tr>
+
+              <!-- ROW 2: Blue Ocean Group / Prime Luxury Apartments -->
+              <tr class="lead-row plat-li plat-gg plat-meta bucket-pitch">
+                <td>
+                  <strong>Blue Ocean Group Residencies</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Kollupitiya, Colombo • Luxury Apartments</span>
+                </td>
+                <td>
+                  <span class="p-badge p-li">💼 LinkedIn</span>
+                  <span class="p-badge p-gg">🔍 Google Ads</span>
+                  <span class="p-badge p-meta">📘 Meta</span>
+                </td>
+                <td>
+                  <span class="tag tag-red">Missing WhatsApp AI Qualifier</span>
+                  <span class="tag tag-red">LinkedIn Hiring 3 Sales Reps</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Running 12 Google &amp; Meta apartment ads, but WhatsApp inquiry response takes 3+ hours.</div>
+                </td>
+                <td style="font-weight:800; color:#fda4af;">රු. 650,000/mo</td>
+                <td><span class="tag tag-green">🎯 TOP 30% PITCH (Score: 97)</span></td>
+                <td>
+                  <label for="lead-sel-2" class="btn-action btn-sm" onclick="document.getElementById('tab-3').checked=true;">🎨 View Demo</label>
+                  <label for="lead-sel-2" class="btn-action btn-emerald btn-sm" onclick="document.getElementById('tab-4').checked=true;">💬 Pitch Closer</label>
+                </td>
+              </tr>
+
+              <!-- ROW 3: SunBeam Solar Technologies -->
+              <tr class="lead-row plat-gg plat-meta plat-li bucket-pitch">
+                <td>
+                  <strong>SunBeam Solar Technologies (Pvt) Ltd</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Colombo • Commercial &amp; Home Solar PV</span>
+                </td>
+                <td>
+                  <span class="p-badge p-gg">🔍 Google Maps</span>
+                  <span class="p-badge p-meta">📘 Meta Ads</span>
+                  <span class="p-badge p-li">💼 LinkedIn</span>
+                </td>
+                <td>
+                  <span class="tag tag-red">No Interactive ROI Calculator</span>
+                  <span class="tag tag-red">Meta Pixel CAPI Missing</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Spending on Facebook static flyers; missing an automated CEB Bill-to-Solar ROI calculator landing page.</div>
+                </td>
+                <td style="font-weight:800; color:#fda4af;">රු. 420,000/mo</td>
+                <td><span class="tag tag-green">🎯 TOP 30% PITCH (Score: 91)</span></td>
+                <td>
+                  <label for="lead-sel-3" class="btn-action btn-sm" onclick="document.getElementById('tab-3').checked=true;">🎨 View Demo</label>
+                  <label for="lead-sel-3" class="btn-action btn-emerald btn-sm" onclick="document.getElementById('tab-4').checked=true;">💬 Pitch Closer</label>
+                </td>
+              </tr>
+
+              <!-- ROW 4: Leema Creations Interior Design -->
+              <tr class="lead-row plat-li plat-tt plat-meta bucket-pitch">
+                <td>
+                  <strong>Leema Interior Creations</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Colombo • Corporate &amp; Turnkey Interiors</span>
+                </td>
+                <td>
+                  <span class="p-badge p-li">💼 LinkedIn</span>
+                  <span class="p-badge p-tt">🎵 TikTok</span>
+                  <span class="p-badge p-meta">📘 Meta</span>
+                </td>
+                <td>
+                  <span class="tag tag-red">Zero B2B LinkedIn Video Funnel</span>
+                  <span class="tag tag-red">Slow Messenger Quote Flow</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Strong portfolio, but missing 60s B2B office transformation video ads on LinkedIn &amp; TikTok.</div>
+                </td>
+                <td style="font-weight:800; color:#fda4af;">රු. 310,000/mo</td>
+                <td><span class="tag tag-green">🎯 TOP 30% PITCH (Score: 89)</span></td>
+                <td>
+                  <label for="lead-sel-4" class="btn-action btn-sm" onclick="document.getElementById('tab-3').checked=true;">🎨 View Demo</label>
+                  <label for="lead-sel-4" class="btn-action btn-emerald btn-sm" onclick="document.getElementById('tab-4').checked=true;">💬 Pitch Closer</label>
+                </td>
+              </tr>
+
+              <!-- ROW 5: Apex Growth & Dev Agency (Dubai / UK Corporate Buyer) -->
+              <tr class="lead-row plat-li plat-x bucket-pitch">
+                <td>
+                  <strong>Apex Velocity Digital &amp; Dev Studio</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Dubai / London • B2B Marketing &amp; Software Agency</span>
+                </td>
+                <td>
+                  <span class="p-badge p-li">💼 LinkedIn</span>
+                  <span class="p-badge p-x">𝕏 Live Intent</span>
+                </td>
+                <td>
+                  <span class="tag tag-purple">Hiring 2 SDRs + 1 Next.js Dev ($9,500/mo payroll)</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Founder posted on X: "Looking to automate our agency lead gen and pre-sale landing page builds."</div>
+                </td>
+                <td style="font-weight:800; color:#6ee7b7;">$4,500 Setup + $497/mo</td>
+                <td><span class="tag tag-green">🎯 TOP 30% WHITE-LABEL OS (Score: 98)</span></td>
+                <td>
+                  <label for="lead-sel-5" class="btn-action btn-violet btn-sm" onclick="document.getElementById('tab-3').checked=true;">🎨 View OS Demo</label>
+                  <label for="lead-sel-5" class="btn-action btn-emerald btn-sm" onclick="document.getElementById('tab-4').checked=true;">💬 Pitch White-Label</label>
+                </td>
+              </tr>
+
+              <!-- ROW 6: 25% of 70% Follow-up Queue Sample -->
+              <tr class="lead-row plat-gg plat-meta bucket-follow">
+                <td>
+                  <strong>Design Edit Interiors</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Mount Lavinia • Home Decor &amp; Lighting</span>
+                </td>
+                <td>
+                  <span class="p-badge p-gg">🔍 Google</span>
+                  <span class="p-badge p-meta">📘 Meta</span>
+                </td>
+                <td>
+                  <span class="tag tag-amber">Moderate Ad Spend • Seasonal Campaign</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Pixel installed, moderate hook score (61/100). Scheduled for automated 72h follow-up drip.</div>
+                </td>
+                <td style="font-weight:700; color:#fcd34d;">රු. 165,000/mo</td>
+                <td><span class="tag tag-amber">⏳ 25% FOLLOW-UP QUEUE (Score: 68)</span></td>
+                <td><span style="font-size:11.5px; color:var(--muted);">Auto-Drip in 48h</span></td>
+              </tr>
+
+              <!-- ROW 7: 25% of 70% Follow-up Queue Sample 2 -->
+              <tr class="lead-row plat-tt plat-meta bucket-follow">
+                <td>
+                  <strong>Ceylon Spice &amp; Wellness Exports</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Colombo • Export &amp; Retail Brand</span>
+                </td>
+                <td>
+                  <span class="p-badge p-tt">🎵 TikTok</span>
+                  <span class="p-badge p-meta">📘 Meta</span>
+                </td>
+                <td>
+                  <span class="tag tag-amber">Organic TikTok Only • No Paid Funnel Yet</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Good product line, warming up via LinkedIn/Instagram automated engagement before pitch.</div>
+                </td>
+                <td style="font-weight:700; color:#fcd34d;">රු. 190,000/mo</td>
+                <td><span class="tag tag-amber">⏳ 25% FOLLOW-UP QUEUE (Score: 71)</span></td>
+                <td><span style="font-size:11.5px; color:var(--muted);">Auto-Drip in 72h</span></td>
+              </tr>
+
+              <!-- ROW 8: 52.5% Auto-Dropped Sample -->
+              <tr class="lead-row plat-gg bucket-drop" style="opacity: 0.65;">
+                <td>
+                  <strong>Small Neighborhood Grocery Shop</strong><br/>
+                  <span style="font-size:11.5px; color:var(--muted);">Suburban Retail • Low Margin</span>
+                </td>
+                <td>
+                  <span class="p-badge p-gg">🔍 Google Maps</span>
+                </td>
+                <td>
+                  <span class="tag tag-red">Below High-Ticket Threshold (&lt; රු. 250k leak)</span>
+                  <div style="font-size:11.5px; color:#cbd5e1; margin-top:3px;">Mother System Gatekeeper automatically dropped this lead to save Claude/Gemini tokens ($0 spent).</div>
+                </td>
+                <td style="font-weight:700; color:var(--muted);">රු. 25,000/mo</td>
+                <td><span class="tag tag-red">🗑️ AUTO-DROPPED (Score: 22)</span></td>
+                <td><span style="font-size:11.5px; color:var(--rose);">Skipped ($0 Cost)</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 3: PILLAR 3 CODING & PRE-SALE LIVE DEMO FACTORY              -->
+      <!-- ================================================================= -->
+      <section id="view-3" class="pane">
+        <div class="card" style="margin-bottom: 18px;">
+          <h3 style="font-size: 16px; margin-bottom: 8px;">Pillar 3: Dynamic Template + AI Pre-Sale Demo Factory (Click Any Company Below to Preview)</h3>
+          <p style="font-size: 13px; color: var(--muted); margin-bottom: 12px;">
+            දවසට ව්‍යාපාර 300කට Lag නොවී තත්පර 0.2න් Demo හදන්නේ අපේ <strong>Niche Master Templates + Claude/Gemini JSON Injection</strong> තාක්ෂණයෙන්:
+          </p>
+          <div class="lead-selector-bar">
+            <label for="lead-sel-1" class="plat-pill">1. Mahogany Masterpieces (Furniture)</label>
+            <label for="lead-sel-2" class="plat-pill">2. Blue Ocean Group (Luxury Real Estate)</label>
+            <label for="lead-sel-3" class="plat-pill">3. SunBeam Solar (Solar ROI App)</label>
+            <label for="lead-sel-4" class="plat-pill">4. Leema Interior (Corporate B2B)</label>
+            <label for="lead-sel-5" class="plat-pill">5. Apex Digital Dubai (White-Label OS)</label>
+          </div>
+        </div>
+
+        <!-- DEMO 1: Mahogany Masterpieces -->
+        <div class="demo-card-item demo-for-1">
+          <div class="grid-2">
+            <div class="card">
+              <span class="tag tag-purple">Claude Sonnet + RG Ads Storyboard Engine</span>
+              <h3 style="font-size:17px; margin:8px 0;">Auto-Built Asset: Mahogany Masterpieces (Colombo 05)</h3>
+              <div style="background:#060a14; padding:14px; border-radius:10px; font-family:monospace; font-size:12px; color:#7dd3fc; line-height:1.6;">
+✔ Detected Gap: Google Traffic high, but 0 TikTok Ads &amp; weak Meta video hook (34/100)
+✔ Injected Luxury Furniture Next.js Catalog + Meta Pixel CAPI Script
+✔ Generated 60s Sinhala Commercial Script ("පරම්පරා ගාණකට පවතින 100% Mahogany...")
+✔ Deployed Live Preview: https://preview.prasadgrowthlab.lk/mahogany-masterpieces
+✔ Compute Cost: $0.004 (~රු. 1.20) • Generation Time: 1.4s
+              </div>
+              <div style="margin-top:14px;">
+                <label for="tab-4" class="btn-action btn-emerald">💬 Send This Demo to Mahogany Masterpieces in Pillar 4 →</label>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--sky);">
+              <div style="font-size:11px; color:var(--sky); text-transform:uppercase;">Live Prospect Landing Page &amp; 60s Video Script Preview</div>
+              <h2 style="font-size:18px; margin:6px 0;">Mahogany Masterpieces — Bespoke Luxury Catalog &amp; VIP Showroom Booking</h2>
+              <p style="font-size:13px; color:#cbd5e1; margin-bottom:12px;">මෙම පිටුව මගින් ඔබගේ මාසිකව අපතේ යන <strong>රු. 380,000</strong> ක Retargeting ආදායම නැවත ලබාගනී.</p>
+              <div style="background:#1e293b; padding:12px; border-radius:8px; font-size:12.5px; margin-bottom:10px;">
+                <strong>🎬 60s Commercial Hook (00s–08s):</strong><br/>
+                "වසර 50කට වඩා විශ්වාසය දිනූ 100%ක්ම සැබෑ මහෝගනී ලීයෙන් නිමවූ රාජකීය ගෘහ භාණ්ඩ... ඔබේ නිවසටත් ඒ අභිමානය එක් කරගන්න!"
+              </div>
+              <span class="tag tag-green">✔ Meta &amp; TikTok Pixel Active</span>
+              <span class="tag tag-amber">✔ VIP Showroom WhatsApp Closer Ready</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEMO 2: Blue Ocean Group -->
+        <div class="demo-card-item demo-for-2">
+          <div class="grid-2">
+            <div class="card">
+              <span class="tag tag-purple">Claude Sonnet + Siyane Real Estate Funnel</span>
+              <h3 style="font-size:17px; margin:8px 0;">Auto-Built Asset: Blue Ocean Group Residencies</h3>
+              <div style="background:#060a14; padding:14px; border-radius:10px; font-family:monospace; font-size:12px; color:#7dd3fc; line-height:1.6;">
+✔ Detected Gap: Running 12 Google/Meta ads, but 3-hour WhatsApp reply delay + Hiring 3 Sales Reps on LinkedIn
+✔ Generated Interactive Colombo Luxury Apartment Floorplan &amp; ROI Calculator
+✔ Connected 24/7 Sinhala/English Expat Investor WhatsApp Closer
+✔ Deployed Live Preview: https://preview.prasadgrowthlab.lk/blue-ocean-vip
+              </div>
+              <div style="margin-top:14px;">
+                <label for="tab-4" class="btn-action btn-emerald">💬 Pitch Rs. 250,000 Autonomous Sales System in Pillar 4 →</label>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--emerald);">
+              <div style="font-size:11px; color:var(--emerald); text-transform:uppercase;">Live Prospect Real Estate Funnel Preview</div>
+              <h2 style="font-size:18px; margin:6px 0;">Blue Ocean Colombo — Instant Virtual Tour &amp; Rental Yield Calculator</h2>
+              <p style="font-size:13px; color:#cbd5e1; margin-bottom:12px;">විනාඩි 180ක ප්‍රමාදය වෙනුවට තත්පර 5න් ගැනුම්කරුවන්ගේ Budget එක පරීක්ෂා කර Site Visit වෙන් කරන ස්වයංක්‍රීය පද්ධතිය.</p>
+              <span class="tag tag-green">✔ Instant Floorplan PDF Sender</span>
+              <span class="tag tag-purple">✔ Replaces 3 Manual SDR Salaries</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEMO 3: SunBeam Solar -->
+        <div class="demo-card-item demo-for-3">
+          <div class="grid-2">
+            <div class="card">
+              <span class="tag tag-purple">Claude Sonnet + Solar Bill Calculator</span>
+              <h3 style="font-size:17px; margin:8px 0;">Auto-Built Asset: SunBeam Solar Technologies</h3>
+              <div style="background:#060a14; padding:14px; border-radius:10px; font-family:monospace; font-size:12px; color:#7dd3fc; line-height:1.6;">
+✔ Detected Gap: Static Facebook flyers with no interactive CEB Bill-to-kW calculator
+✔ Built Interactive Sri Lanka Electricity Bill → Solar System Size &amp; Payback Calculator
+✔ Deployed Live Preview: https://preview.prasadgrowthlab.lk/sunbeam-solar-calc
+              </div>
+              <div style="margin-top:14px;">
+                <label for="tab-4" class="btn-action btn-emerald">💬 Send Solar Calculator Demo to SunBeam MD →</label>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--amber);">
+              <div style="font-size:11px; color:var(--amber); text-transform:uppercase;">Live Prospect Interactive WebApp Preview</div>
+              <h2 style="font-size:18px; margin:6px 0;">SunBeam Solar — ඔබේ මාසික විදුලි බිලෙන් ඉතිරි වන මුදල තත්පර 10න් බලන්න</h2>
+              <p style="font-size:13px; color:#cbd5e1; margin-bottom:12px;">රු. 25,000+ විදුලි බිලක් ගෙවන නිවෙස් හිමියන් පමණක් තෝරාගෙන WhatsApp හරහා ඉංජිනේරු පරීක්ෂාව වෙන් කරයි.</p>
+              <span class="tag tag-green">✔ Auto High-Ticket Filter (Bill ≥ රු. 25,000)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEMO 4: Leema Interior -->
+        <div class="demo-card-item demo-for-4">
+          <div class="grid-2">
+            <div class="card">
+              <span class="tag tag-purple">RG Ads B2B Commercial Storyboard</span>
+              <h3 style="font-size:17px; margin:8px 0;">Auto-Built Asset: Leema Interior Creations</h3>
+              <div style="background:#060a14; padding:14px; border-radius:10px; font-family:monospace; font-size:12px; color:#7dd3fc; line-height:1.6;">
+✔ Detected Gap: Missing LinkedIn &amp; TikTok B2B Corporate Office Fit-Out Video Funnel
+✔ Built 60s Corporate Office Transformation Script + B2B Consultation Funnel
+✔ Deployed Live Preview: https://preview.prasadgrowthlab.lk/leema-corporate
+              </div>
+              <div style="margin-top:14px;">
+                <label for="tab-4" class="btn-action btn-emerald">💬 Pitch B2B Video Funnel in Pillar 4 →</label>
+              </div>
+            </div>
+            <div class="card">
+              <h2 style="font-size:18px; margin:6px 0;">Leema Corporate Interiors — 3D Office Fit-Out Estimator</h2>
+              <p style="font-size:13px; color:#cbd5e1;">කොළඹ ප්‍රධාන ආයතනවල Office Renovations සඳහා LinkedIn + TikTok Video Funnel සැලැස්ම.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEMO 5: Apex Digital Dubai (White-Label SaaS Buyer) -->
+        <div class="demo-card-item demo-for-5">
+          <div class="grid-2">
+            <div class="card">
+              <span class="tag tag-green">Global Agency White-Label OS Pitch ($4,500 + $497/mo)</span>
+              <h3 style="font-size:17px; margin:8px 0;">Auto-Built Asset: Apex Velocity Digital (Dubai / UK)</h3>
+              <div style="background:#060a14; padding:14px; border-radius:10px; font-family:monospace; font-size:12px; color:#7dd3fc; line-height:1.6;">
+✔ Detected Signal: Hiring 2 SDRs + 1 Web Dev on LinkedIn &amp; X ($9,500/mo payroll)
+✔ Built White-Label Branded Instance of Mother System OS with Apex Digital Logo
+✔ Deployed Live Preview: https://preview.prasadgrowthlab.lk/apex-agency-os
+              </div>
+              <div style="margin-top:14px;">
+                <label for="tab-4" class="btn-action btn-violet">💬 Pitch $4,500 White-Label OS to Agency Founder →</label>
+              </div>
+            </div>
+            <div class="card" style="border-color: var(--violet);">
+              <h2 style="font-size:18px; margin:6px 0;">Apex Autonomous Agency OS (White-Label Preview)</h2>
+              <p style="font-size:13px; color:#cbd5e1;">"We used our own 5-Pillar OS to find your X post, audit your agency, and build this custom portal in 4 seconds. License it for $497/mo instead of paying $9,500/mo in salaries."</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 4: PILLAR 1 & 4 OMNICHANNEL BUSINESS MANAGER CLOSER          -->
+      <!-- ================================================================= -->
+      <section id="view-4" class="pane">
+        <div class="grid-2">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+              <div>
+                <h3 style="font-size:16px;">Pillar 1 &amp; 4: Consultative Business Manager (Live Closer)</h3>
+                <p style="font-size:12px; color:var(--muted);">Click the simulation buttons below to test Sinhala Voice Notes, Price Objections, and Instant Deal Closing!</p>
+              </div>
+              <span class="tag tag-green">Anti-Ban Pacing Active</span>
+            </div>
+
+            <div class="chat-box" id="chatWindow">
+              <div class="msg msg-ai">[Pillar 4 Business Manager → Mahogany Masterpieces (WhatsApp + LinkedIn)]
+ආයුබෝවන්! මම RG Ads &amp; Siyane Growth Lab වෙතින්. අපේ 5-Platform Diagnostic පද්ධතියෙන් Mahogany Masterpieces ආයතනයේ Google, Meta, සහ TikTok පැත්ත පරීක්ෂා කරද්දී මාසෙකට දළ වශයෙන් රු. 380,000 ක පමණ ආදායමක් අපතේ යන ප්‍රධාන හිල් 2ක් දැක්කා:
+1. Google Search හරහා එන ඉහළ වටිනාකමක් ඇති ගනුදෙනුකරුවන්ට TikTok සහ Reels හරහා 60s Commercial Video Retargeting නොමැති වීම.
+2. දැනට යන පෝස්ට්වල මුල් තත්පර 5 (Hook Score: 34/100) දුර්වල වීම.
+
+මේක විසඳන්න අපි ඔයාලා වෙනුවෙන්ම හදපු මේ Live Sample පිටුව සහ 60s Video Script එක බලන්න: https://preview.prasadgrowthlab.lk/mahogany-masterpieces
+
+අපේ High-Ticket "3-Video Brand Dominance + Auto-Closer Funnel" එකෙන් මේ සතියේම මේක හදමුද?</div>
+
+              <!-- Pure CSS Triggered Interactive Blocks -->
+              <div class="msg msg-user sim-voice-block">🎤 [Customer Sinhala Voice Note - 0:16]: "මචං ඔයාලා එවපු Sample Page එකයි Script එකයි මම බැලුවා, අපේ අඩුපාඩුව හරියටම අල්ලලා තියෙනවා! හැබැයි මේකේ ගාණ කීයද?"</div>
+              <div class="msg msg-ai sim-voice-block">[Gemini 2.5 Pro Voice Transcriber → Consultative Closer]
+ඔබේ Voice Note එකට බොහොම ස්තූතියි! ඔබට මාසිකව අහිමි වන රු. 380,000+ ආදායම නැවත ලබාගන්නා මෙම සම්පූර්ණ "3-Video Commercial Suite + Meta/TikTok Pixel Funnel + WhatsApp VIP Closer" පැකේජයටම ආයෝජනය රු. 125,000 ක් පමණයි (එක ගෘහ භාණ්ඩ ඇණවුමකින්ම මුළු වියදම ආවරණය වේ).</div>
+
+              <div class="msg msg-user sim-price-block">💬 [Customer]: "රු. 125,000 එකපාර ගෙවන්න ඕනෙද? කොච්චර කාලෙකින් වැඩේ Live දානවද?"</div>
+              <div class="msg msg-ai sim-price-block">[Pillar 4 Objection Handler]
+එකපාර ගෙවන්න අවශ්‍ය නෑ! 50% මූලික ගෙවීමකින් (රු. 62,500) අදම ආරම්භ කරලා, Videos 3 සහ Funnel එක Live දාපු පසු ඉතිරිය ගෙවන්න පුළුවන්. දවස් 7ක් ඇතුළත සම්පූර්ණ Funnel එකම Live යනවා!</div>
+
+              <div class="msg msg-user sim-deal-block">✅ [Customer]: "හරි එහෙනම් Agreement එකයි Invoice එකයි එවන්න, අදම 50% Advance එක දාලා වැඩේ පටන් ගමු!"</div>
+              <div class="msg msg-ai sim-deal-block">🎉 බොහොම ස්තූතියි! මම Job #25908 විදිහට ව්‍යාපෘතිය ආරම්භ කළා. ඔබගේ Google Docs Service Agreement එක, රු. 62,500 Advance Invoice එක, සහ පළවෙනි තත්පර 60 වීඩියෝ පිටපත දැන් ස්වයංක්‍රීයව සකස් කර එවා ඇත!</div>
+            </div>
+
+            <!-- Guaranteed-Working Action Buttons -->
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+              <label for="chat-sim-voice" class="btn-action btn-sm">1. 🎤 Test Customer Voice Note</label>
+              <label for="chat-sim-price" class="btn-action btn-amber btn-sm">2. 💰 Test Price Objection</label>
+              <label for="chat-sim-deal" class="btn-action btn-emerald btn-sm">3. ✅ Close High-Ticket Deal (රු. 125,000)</label>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:10px;">Autonomous Fulfillment &amp; Workspace PM Pipeline</h3>
+            <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px;">
+              වම් පැත්තේ <strong>"3. ✅ Close High-Ticket Deal"</strong> බොත්තම ඔබපු ගමන් අලුත් Job #25908 මෙතනට ඉබේම එකතු වෙන හැටි බලන්න:
+            </p>
+
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div class="sim-deal-block" style="padding:12px; background:rgba(16,185,129,0.15); border:1px solid var(--emerald); border-radius:9px; font-size:13px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <strong>🔥 Job #25908 — Mahogany Masterpieces (JUST WON)</strong>
+                  <span class="tag tag-green">රු. 125,000</span>
+                </div>
+                <div style="font-size:12px; color:#cbd5e1; margin-top:4px;">3-Video Commercial Suite + Meta/TikTok Pixel Funnel</div>
+                <div style="font-size:11.5px; color:var(--sky); margin-top:4px;">📄 Auto-Created in Google Drive: Agreement_25908.pdf • Invoice_62500_LKR.pdf • 60s_Mahogany_Script.docx</div>
+              </div>
+
+              <div style="padding:12px; background:var(--panel-alt); border-radius:9px; border-left:3px solid var(--emerald); font-size:13px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <strong>Job #25907 — Apex Velocity Digital (Dubai)</strong>
+                  <span class="tag tag-purple">$4,500 + $497/mo</span>
+                </div>
+                <div style="font-size:12px; color:var(--muted); margin-top:4px;">White-Label 5-Pillar Autonomous OS Deployment</div>
+                <div style="font-size:11.5px; color:var(--sky); margin-top:4px;">📄 Tenant #4 Provisioned in Supabase Vault</div>
+              </div>
+
+              <div style="padding:12px; background:var(--panel-alt); border-radius:9px; border-left:3px solid var(--sky); font-size:13px;">
+                <div style="display:flex; justify-content:space-between;">
+                  <strong>Job #25906 — Blue Ocean Group Residencies</strong>
+                  <span class="tag tag-green">රු. 250,000</span>
+                </div>
+                <div style="font-size:12px; color:var(--muted); margin-top:4px;">Real Estate Funnel + 24/7 Investor WhatsApp Closer</div>
+                <div style="font-size:11.5px; color:var(--sky); margin-top:4px;">📄 Status: Voiceover &amp; CRM Webhook Live</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 1: PILLAR 5 MOTHER SYSTEM KERNEL & 1,000/DAY QUEUES          -->
+      <!-- ================================================================= -->
+      <section id="view-1" class="pane">
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:8px;">Pillar 5: Zero-Lag 1,000 Leads/Day Queue Architecture (Supabase pgmq)</h3>
+            <table>
+              <thead>
+                <tr>
+                  <th>Queue Name</th>
+                  <th>Daily Volume</th>
+                  <th>Worker Rate</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>q_discovered_leads</code> (5 Platforms)</td>
+                  <td>1,000 / day</td>
+                  <td>42 / hour (0.7/min)</td>
+                  <td><span class="tag tag-green">ZERO LAG</span></td>
+                </tr>
+                <tr>
+                  <td><code>q_qualified_audits</code> (Top 30%)</td>
+                  <td>300 / day</td>
+                  <td>Template Injection (0.2s)</td>
+                  <td><span class="tag tag-green">ACTIVE</span></td>
+                </tr>
+                <tr>
+                  <td><code>q_followup_drip</code> (25% of 700)</td>
+                  <td>175 / day</td>
+                  <td>72h Scheduled Cron</td>
+                  <td><span class="tag tag-amber">SCHEDULED</span></td>
+                </tr>
+                <tr>
+                  <td><code>q_auto_disqualified</code> (52.5%)</td>
+                  <td>525 / day</td>
+                  <td>Dropped Immediately</td>
+                  <td><span class="tag tag-red">$0 SPENT</span></td>
+                </tr>
+                <tr>
+                  <td><code>q_dead_letter_healing</code></td>
+                  <td>2 Incidents</td>
+                  <td>Auto-Patched in 14s</td>
+                  <td><span class="tag tag-purple">SELF-HEALED</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:8px;">1,000 Businesses/Day Unit Economics Ledger</h3>
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
+              <div style="padding:11px; background:var(--panel-alt); border-radius:8px; display:flex; justify-content:space-between;">
+                <span>1,000 Cross-Platform Scans (Apify + Ad Libraries)</span>
+                <strong>$2.00 / day (~රු. 600)</strong>
+              </div>
+              <div style="padding:11px; background:var(--panel-alt); border-radius:8px; display:flex; justify-content:space-between;">
+                <span>300 Dynamic Pre-Sale Demos (Template + JSON Hook)</span>
+                <strong>$1.30 / day (~රු. 390)</strong>
+              </div>
+              <div style="padding:11px; background:var(--panel-alt); border-radius:8px; display:flex; justify-content:space-between;">
+                <span>300 Multi-Channel Pitches + 175 Follow-ups</span>
+                <strong>$3.50 / day (~රු. 1,050)</strong>
+              </div>
+              <div style="padding:12px; background:rgba(16,185,129,0.15); border:1px solid var(--emerald); border-radius:8px; display:flex; justify-content:space-between; color:#6ee7b7;">
+                <strong>Total Daily Cost (for 1,000 Businesses)</strong>
+                <strong>$6.80 / day (~රු. 2,040)</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================= -->
+      <!-- VIEW 5: LITELLM / OPENROUTER GATEWAY & MULTI-TENANT VAULT         -->
+      <!-- ================================================================= -->
+      <section id="view-5" class="pane">
+        <div class="sim-vault-saved" style="margin-bottom:14px; padding:12px 16px; background:rgba(16,185,129,0.2); border:1px solid var(--emerald); border-radius:9px; color:#6ee7b7; font-size:13px; font-weight:700;">
+          ✔ Saved to Supabase <code>companies.model_config</code> &amp; Encrypted Vault! Switched model across all 5 Pillars with 0 code changes.
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:8px;">Universal Model Switcher (LiteLLM / OpenRouter)</h3>
+            <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px;">
+              කේතය වෙනස් නොකර Gemini, Claude, හෝ අනාගතයේ එන GPT-6 වලට තත්පර 5න් මාරු වන්න:
+            </p>
+            <label style="font-size:12px; color:var(--muted); display:block; margin-top:8px;">Pillar 1 &amp; 4: Consultative Closer Model</label>
+            <select class="prompt-input" style="width:100%; margin-top:4px;">
+              <option>google/gemini-2.5-flash (Default • Sub-second Sinhala/English)</option>
+              <option>google/gemini-2.5-pro (Deep Multimodal Voice/Video)</option>
+              <option>openai/future-gpt-6 (Zero-Code OpenRouter Switch)</option>
+              <option>anthropic/claude-sonnet-4</option>
+            </select>
+
+            <label style="font-size:12px; color:var(--muted); display:block; margin-top:12px;">Pillar 3: Coding &amp; Demo Factory Model</label>
+            <select class="prompt-input" style="width:100%; margin-top:4px;">
+              <option>anthropic/claude-sonnet-4 ($20 Pro Plan / Claude Code)</option>
+              <option>google/gemini-2.5-pro</option>
+              <option>openai/future-gpt-6-codex</option>
+            </select>
+
+            <label for="vault-save-toggle" class="btn-action btn-emerald" style="margin-top:16px; width:100%;">
+              💾 Apply Model Config Across All 5 Pillars
+            </label>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size:16px; margin-bottom:8px;">White-Label SaaS Client Provisioning (Supabase Vault)</h3>
+            <p style="font-size:12.5px; color:var(--muted); margin-bottom:12px;">
+              Corporate Digital Marketing Agency එකකට හෝ Software Company එකකට මේ පද්ධතියම විකුණද්දී මෙතනින් විනාඩි 2න් අලුත් Tenant කෙනෙක් හදන්න:
+            </p>
+            <label style="font-size:12px; color:var(--muted); display:block;">New Corporate Client Name</label>
+            <input type="text" class="prompt-input" value="Apex Velocity Digital (Dubai / UK)" style="width:100%; margin:4px 0 10px;" />
+            <label style="font-size:12px; color:var(--muted); display:block;">License Tier &amp; Billing Mode</label>
+            <select class="prompt-input" style="width:100%; margin:4px 0 14px;">
+              <option>White-Label Agency License ($2,500 Setup + $497/mo Managed)</option>
+              <option>Enterprise Software Dev BYOK ($5,000 Setup + Client Own Keys)</option>
+            </select>
+            <label for="vault-save-toggle" class="btn-action btn-violet" style="width:100%;">
+              🔒 Provision New White-Label Client in Supabase Vault
+            </label>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</body>
+</html>
